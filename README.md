@@ -1,20 +1,19 @@
-<<<<<<< HEAD
-# 🏠 Ibiti Visitors
+# Ibiti Visitors
 ### Automatic Access Request — Parque Ibiti do Paço
 
 ---
 
-## 📋 What this application does
+## What this application does
 
 - Registers your data as a resident (saved permanently)
 - Registers frequent visitors with all form data
 - Generates the filled PDF request automatically with one click
-- Support for single day or period up to 3 days
+- Support for a single day or a period up to 3 days
 - Up to 5 visitors per request
 
 ---
 
-## 🚀 Installation (one time only)
+## Installation (one time only)
 
 ### Prerequisite: Python 3.8 or higher
 
@@ -44,8 +43,8 @@ py app.py
 
 You will see the message:
 ```
-🏠 Ibiti Visitors - Starting...
-👉 Open in browser: http://localhost:5000
+ Ibiti Visitors - Starting...
+ Open in browser: http://localhost:5000
 ```
 
 ---
@@ -58,16 +57,16 @@ Open your browser (Chrome, Firefox, Edge...) and access:
 
 ---
 
-## 📱 How to use
+## How to use
 
 1. **My Data** → Fill in your resident data (done only once)
 2. **Visitors** → Register people who visit your house
-3. **Generate PDF** → Select visitors, choose the date and click "Generate PDF"
+3. **Generate PDF** → Select visitors, choose the date, and click "Generate PDF"
 4. The filled PDF will be downloaded automatically — just print and sign!
 
 ---
 
-## 📁 Important files
+## Important files
 
 - `app.py` — The main application
 - `Requerimento_Visitante_Vazio.pdf` — The blank form (don't delete!)
@@ -77,7 +76,7 @@ Open your browser (Chrome, Firefox, Edge...) and access:
 
 ---
 
-## ❓ Frequently asked questions
+## Frequently asked questions
 
 **Does the application close by itself?**  
 Leave the terminal open while using the application.
