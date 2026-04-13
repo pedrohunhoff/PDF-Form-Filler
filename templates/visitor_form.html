@@ -1,0 +1,95 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Visitante — Ibiti Visitantes{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>{{ "✏️ Editar" if visitor else "➕ Adicionar" }} Visitante</h2>
+
+  <form method="POST" accept-charset="UTF-8">
+    <div class="form-grid full" style="margin-bottom:16px;">
+      <div>
+        <label for="nome">Nome completo *</label>
+        <input type="text" name="nome" id="nome" value="{{ visitor.nome if visitor else '' }}" placeholder="Nome completo do visitante" required>
+      </div>
+    </div>
+
+    <div class="form-grid three" style="margin-bottom:16px;">
+      <div>
+        <label for="rg">RG</label>
+        <input type="text" name="rg" id="rg" value="{{ visitor.rg if visitor else '' }}" placeholder="00.000.000-0">
+      </div>
+      <div>
+        <label for="cpf">CPF</label>
+        <input type="text" name="cpf" id="cpf" value="{{ visitor.cpf if visitor else '' }}" placeholder="000.000.000-00">
+      </div>
+      <div>
+        <label for="telefone">Telefone</label>
+        <input type="text" name="telefone" id="telefone" value="{{ visitor.telefone if visitor else '' }}" placeholder="(15) 99999-9999">
+      </div>
+    </div>
+
+    <div class="form-grid full" style="margin-bottom:16px;">
+      <div>
+        <label for="endereco">Endereço</label>
+        <input type="text" name="endereco" id="endereco" value="{{ visitor.endereco if visitor else '' }}" placeholder="Rua, número, complemento">
+      </div>
+    </div>
+
+    <div class="form-grid three" style="margin-bottom:20px;">
+      <div>
+        <label for="bairro">Bairro</label>
+        <input type="text" name="bairro" id="bairro" value="{{ visitor.bairro if visitor else '' }}" placeholder="Bairro">
+      </div>
+      <div>
+        <label for="cidade">Cidade</label>
+        <input type="text" name="cidade" id="cidade" value="{{ visitor.cidade if visitor else '' }}" placeholder="Cidade">
+      </div>
+      <div>
+        <label for="cep">CEP</label>
+        <input type="text" name="cep" id="cep" value="{{ visitor.cep if visitor else '' }}" placeholder="00000-000">
+      </div>
+    </div>
+
+    <p class="section-label">Relacionamento</p>
+    <div class="radio-group" style="margin-bottom:12px;">
+      <label>
+        <input type="radio" name="relacionamento" value="amigo" id="rel_amigo"
+               {% if not visitor or visitor.relacionamento == 'amigo' %}checked{% endif %}
+               onchange="toggleDetail()">
+        Amigo(a)
+      </label>
+      <label>
+        <input type="radio" name="relacionamento" value="parente" id="rel_parente"
+               {% if visitor and visitor.relacionamento == 'parente' %}checked{% endif %}
+               onchange="toggleDetail()">
+        Parente
+      </label>
+      <label>
+        <input type="radio" name="relacionamento" value="outro" id="rel_outro"
+               {% if visitor and visitor.relacionamento == 'outro' %}checked{% endif %}
+               onchange="toggleDetail()">
+        Outro
+      </label>
+    </div>
+
+    <div id="detail_block" style="margin-bottom:20px; display:{% if visitor and visitor.relacionamento in ['parente','outro'] %}block{% else %}none{% endif %};">
+      <label for="relacionamento_detalhe">Especificar</label>
+      <input type="text" name="relacionamento_detalhe" id="relacionamento_detalhe"
+             value="{{ visitor.relacionamento_detalhe if visitor else '' }}"
+             placeholder="Ex: Irmã, Primo, Prestador de serviço…">
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn btn-primary">💾 Salvar</button>
+      <a href="/visitors" class="btn btn-secondary">← Cancelar</a>
+    </div>
+  </form>
+</div>
+
+<script>
+  function toggleDetail() {
+    const rel = document.querySelector('input[name=relacionamento]:checked').value;
+    document.getElementById('detail_block').style.display = (rel === 'parente' || rel === 'outro') ? 'block' : 'none';
+  }
+  toggleDetail();
+</script>
+{% endblock %}

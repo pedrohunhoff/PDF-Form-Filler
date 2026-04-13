@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Visitantes — Ibiti Visitantes{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>👥 Visitantes Cadastrados</h2>
+
+  {% if visitors %}
+    {% for v in visitors %}
+    <div class="visitor-card">
+      <div class="visitor-info">
+        <h3>{{ v.nome }}</h3>
+        <p>
+          RG: {{ v.rg }} &nbsp;|&nbsp; CPF: {{ v.cpf }}
+          {% if v.telefone %} &nbsp;|&nbsp; 📞 {{ v.telefone }}{% endif %}<br>
+          {% if v.endereco %}📍 {{ v.endereco }}{% if v.bairro %}, {{ v.bairro }}{% endif %}{% if v.cidade %} — {{ v.cidade }}{% endif %}{% endif %}
+        </p>
+      </div>
+      <div class="visitor-actions">
+        <span class="badge badge-{{ v.relacionamento }}">
+          {% if v.relacionamento == 'amigo' %}Amigo(a)
+          {% elif v.relacionamento == 'parente' %}Parente{% if v.relacionamento_detalhe %}: {{ v.relacionamento_detalhe }}{% endif %}
+          {% else %}Outro{% if v.relacionamento_detalhe %}: {{ v.relacionamento_detalhe }}{% endif %}
+          {% endif %}
+        </span>
+        <a href="/visitor/edit/{{ v.id }}" class="btn btn-secondary" style="padding:6px 12px;font-size:0.8rem;">✏️ Editar</a>
+        <form method="POST" action="/visitor/delete/{{ v.id }}" style="display:inline;"
+              onsubmit="return confirm('Remover {{ v.nome }}?')">
+          <button type="submit" class="btn btn-danger" style="padding:6px 12px;font-size:0.8rem;">🗑️</button>
+        </form>
+      </div>
+    </div>
+    {% endfor %}
+  {% else %}
+    <div class="empty-state">
+      <div class="icon">👤</div>
+      <p>Nenhum visitante cadastrado ainda.<br>Adicione os visitantes que frequentam sua casa.</p>
+    </div>
+  {% endif %}
+
+  <div class="actions" style="margin-top:20px;">
+    <a href="/visitor/add" class="btn btn-primary">+ Adicionar visitante</a>
+    <a href="/" class="btn btn-secondary">← Voltar</a>
+  </div>
+</div>
+{% endblock %}

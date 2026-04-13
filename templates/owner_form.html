@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}{{ action }} Proprietário — Ibiti Visitantes{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>👤 {{ "✏️ Editar" if owner else "➕ Adicionar" }} Proprietário</h2>
+  <p style="font-size:0.85rem;color:#718096;margin-bottom:20px;">Estes dados serão usados para gerar requerimentos de visitantes.</p>
+
+  <form method="POST" accept-charset="UTF-8">
+    <div class="form-grid full" style="margin-bottom:16px;">
+      <div>
+        <label for="nome">Nome completo *</label>
+        <input type="text" name="nome" id="nome" value="{{ owner.nome if owner else '' }}" placeholder="Nome completo do proprietário" required>
+      </div>
+    </div>
+
+    <div class="form-grid three" style="margin-bottom:16px;">
+      <div>
+        <label for="quadra">Quadra</label>
+        <input type="text" name="quadra" id="quadra" value="{{ owner.quadra if owner else '' }}" placeholder="Ex: A">
+      </div>
+      <div>
+        <label for="lote">Lote nº</label>
+        <input type="text" name="lote" id="lote" value="{{ owner.lote if owner else '' }}" placeholder="Ex: 42">
+      </div>
+      <div>
+        <label>Tipo</label>
+        <div class="radio-group" style="margin-top:8px;">
+          <label><input type="radio" name="tipo" value="proprietario" {% if not owner or owner.tipo == 'proprietario' %}checked{% endif %}> Proprietário(a)</label>
+          <label><input type="radio" name="tipo" value="inquilino" {% if owner and owner.tipo == 'inquilino' %}checked{% endif %}> Inquilino(a)</label>
+          <label><input type="radio" name="tipo" value="morador" {% if owner and owner.tipo == 'morador' %}checked{% endif %}> Morador(a)</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-grid" style="margin-bottom:24px;">
+      <div>
+        <label for="rg">RG</label>
+        <input type="text" name="rg" id="rg" value="{{ owner.rg if owner else '' }}" placeholder="00.000.000-0">
+      </div>
+      <div>
+        <label for="cpf">CPF</label>
+        <input type="text" name="cpf" id="cpf" value="{{ owner.cpf if owner else '' }}" placeholder="000.000.000-00">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn btn-primary">💾 Salvar</button>
+      <a href="/owners" class="btn btn-secondary">← Cancelar</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

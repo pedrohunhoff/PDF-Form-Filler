@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% block title %}Proprietários — Ibiti Visitantes{% endblock %}
+{% block content %}
+<div class="card">
+  <h2>👤 Proprietários</h2>
+  <p style="font-size:0.85rem;color:#718096;margin-bottom:20px;">Gerencie os proprietários/requerentes cadastrados no sistema.</p>
+
+  <div class="actions" style="margin-bottom:20px;">
+    <a href="/owner/add" class="btn btn-primary">➕ Adicionar Proprietário</a>
+  </div>
+
+  {% set all_owners = owners %}
+  {% if all_owners %}
+    <div id="owners_list">
+      {% for o in all_owners %}
+      <div class="owner-card" id="oc_{{ o.id }}">
+        <div class="owner-info">
+          <h3>{{ o.nome }}</h3>
+          <p>Quadra: {{ o.quadra }} &nbsp;|&nbsp; Lote: {{ o.lote }}
+            {% if o.rg %} &nbsp;|&nbsp; RG: {{ o.rg }}{% endif %}
+            {% if o.cpf %} &nbsp;|&nbsp; CPF: {{ o.cpf }}{% endif %}
+          </p>
+          <p style="font-size:0.8rem;color:#718096;margin-top:4px;">
+            Tipo: {% if o.tipo == 'proprietario' %}Proprietário(a)
+                 {% elif o.tipo == 'inquilino' %}Inquilino(a)
+                 {% else %}Morador(a){% endif %}
+          </p>
+        </div>
+        <div class="owner-actions">
+          <a href="/owner/edit/{{ o.id }}" class="btn btn-secondary" style="font-size:0.75rem;padding:6px 12px;">✏️ Editar</a>
+          <form method="POST" action="/owner/delete/{{ o.id }}" style="display:inline;" onsubmit="return confirm('Tem certeza que deseja remover este proprietário?')">
+            <button type="submit" class="btn btn-danger" style="font-size:0.75rem;padding:6px 12px;">🗑️ Remover</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="icon">🏠</div>
+      <p>Nenhum proprietário cadastrado ainda.</p>
+      <a href="/owner/add" class="btn btn-primary" style="margin-top:12px;">+ Adicionar Primeiro Proprietário</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+<style>
+.owner-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  background: #f8fafc;
+}
+
+.owner-info h3 {
+  margin: 0 0 8px 0;
+  font-size: 1rem;
+  color: #1a4731;
+}
+
+.owner-info p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #4a5568;
+}
+
+.owner-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #718096;
+}
+
+.empty-state .icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+}
+</style>

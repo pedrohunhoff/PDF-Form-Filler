@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Ibiti Visitantes{% endblock %}</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f4f8; color: #1a202c; min-height: 100vh; }
+    
+    header { background: linear-gradient(135deg, #1a4731, #2d7a50); color: white; padding: 0; box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+    .header-inner { max-width: 900px; margin: 0 auto; padding: 16px 24px; display: flex; align-items: center; gap: 16px; }
+    header h1 { font-size: 1.4rem; font-weight: 700; letter-spacing: -0.3px; }
+    header p { font-size: 0.8rem; opacity: 0.8; }
+
+    nav { background: rgba(0,0,0,0.15); }
+    .nav-inner { max-width: 900px; margin: 0 auto; padding: 0 24px; display: flex; gap: 4px; }
+    nav a { color: rgba(255,255,255,0.85); text-decoration: none; padding: 10px 16px; font-size: 0.85rem; display: block; border-bottom: 3px solid transparent; transition: all 0.2s; }
+    nav a:hover, nav a.active { color: white; border-bottom-color: #4ade80; background: rgba(255,255,255,0.08); }
+
+    main { max-width: 900px; margin: 32px auto; padding: 0 24px; }
+
+    .card { background: white; border-radius: 12px; padding: 28px; box-shadow: 0 1px 4px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    .card h2 { font-size: 1.1rem; font-weight: 600; color: #1a4731; margin-bottom: 20px; padding-bottom: 12px; border-bottom: 2px solid #e8f5ee; }
+
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-grid.three { grid-template-columns: 1fr 1fr 1fr; }
+    .form-grid.full { grid-template-columns: 1fr; }
+    .span2 { grid-column: span 2; }
+    
+    label { display: block; font-size: 0.78rem; font-weight: 600; color: #4a5568; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.4px; }
+    input[type=text], input[type=date], select { width: 100%; padding: 9px 12px; border: 1.5px solid #e2e8f0; border-radius: 8px; font-size: 0.9rem; color: #1a202c; transition: border-color 0.2s; background: #fafafa; }
+    input:focus, select:focus { outline: none; border-color: #2d7a50; background: white; box-shadow: 0 0 0 3px rgba(45,122,80,0.1); }
+    
+    .radio-group { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 4px; }
+    .radio-group label { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; text-transform: none; letter-spacing: 0; font-weight: 500; cursor: pointer; color: #2d3748; }
+    .radio-group input[type=radio] { width: auto; accent-color: #2d7a50; }
+
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: none; border-radius: 8px; font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: all 0.2s; text-decoration: none; }
+    .btn-primary { background: #1a4731; color: white; }
+    .btn-primary:hover { background: #2d7a50; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(26,71,49,0.3); }
+    .btn-secondary { background: #e8f5ee; color: #1a4731; border: 1.5px solid #b7e0c8; }
+    .btn-secondary:hover { background: #d1edd9; }
+    .btn-danger { background: #fee2e2; color: #b91c1c; border: 1.5px solid #fca5a5; }
+    .btn-danger:hover { background: #fecaca; }
+    .btn-green { background: #2d7a50; color: white; padding: 12px 28px; font-size: 0.95rem; }
+    .btn-green:hover { background: #1a4731; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(26,71,49,0.35); }
+
+    .actions { display: flex; gap: 10px; align-items: center; margin-top: 24px; flex-wrap: wrap; }
+
+    .alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 0.875rem; font-weight: 500; }
+    .alert-success { background: #dcfce7; color: #15803d; border: 1px solid #86efac; }
+    .alert-error { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
+
+    .visitor-card { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 1.5px solid #e2e8f0; border-radius: 10px; margin-bottom: 10px; background: #fafafa; transition: all 0.2s; }
+    .visitor-card:hover { border-color: #b7e0c8; background: #f0faf4; }
+    .visitor-card.selected { border-color: #2d7a50; background: #f0faf4; box-shadow: 0 0 0 3px rgba(45,122,80,0.12); }
+    .visitor-info h3 { font-size: 0.95rem; font-weight: 600; color: #1a202c; }
+    .visitor-info p { font-size: 0.8rem; color: #718096; margin-top: 2px; }
+    .visitor-actions { display: flex; gap: 8px; align-items: center; }
+    
+    .checkbox-wrap { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+    .checkbox-wrap input[type=checkbox] { width: 18px; height: 18px; accent-color: #2d7a50; cursor: pointer; }
+
+    .section-label { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #2d7a50; margin-bottom: 12px; }
+
+    .badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; }
+    .badge-amigo { background: #e0f2fe; color: #0277bd; }
+    .badge-parente { background: #fce7f3; color: #9c27b0; }
+    .badge-outro { background: #fff3e0; color: #e65100; }
+
+    .empty-state { text-align: center; padding: 40px; color: #a0aec0; }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
+    .empty-state p { font-size: 0.9rem; }
+
+    .info-box { background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 8px; padding: 12px 16px; font-size: 0.83rem; color: #1e40af; margin-bottom: 20px; }
+
+    .date-toggle { display: flex; gap: 0; margin-bottom: 16px; border: 1.5px solid #e2e8f0; border-radius: 8px; overflow: hidden; }
+    .date-toggle label { flex: 1; text-align: center; padding: 9px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #718096; text-transform: none; letter-spacing: 0; transition: all 0.2s; }
+    .date-toggle input[type=radio]:checked + label { background: #1a4731; color: white; }
+    .date-toggle input[type=radio] { display: none; }
+
+    .count-badge { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; background: #2d7a50; color: white; border-radius: 50%; font-size: 0.75rem; font-weight: 700; margin-left: 6px; }
+
+    .logo-circle { width: 42px; height: 42px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="header-inner">
+    <div class="logo-circle">🏠</div>
+    <div>
+      <h1>Ibiti Visitantes</h1>
+      <p>Requerimento de Acesso — Parque Ibiti do Paço</p>
+    </div>
+  </div>
+  <nav>
+    <div class="nav-inner">
+      <a href="/" {% if request.endpoint == 'index' %}class="active"{% endif %}>📋 Gerar PDF</a>
+      <a href="/owners" {% if request.endpoint in ['owners','add_owner','edit_owner'] %}class="active"{% endif %}>👤 Proprietários</a>
+      <a href="/visitors" {% if request.endpoint in ['visitors','add_visitor','edit_visitor'] %}class="active"{% endif %}>👥 Visitantes</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+
+  {% block content %}{% endblock %}
+</main>
+</body>
+</html>

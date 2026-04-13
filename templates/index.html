@@ -1,0 +1,174 @@
+{% extends "base.html" %}
+{% block title %}Gerar PDF — Ibiti Visitantes{% endblock %}
+{% block content %}
+
+{% if not owners %}
+<div class="info-box">
+  ⚠️ <strong>Nenhum proprietário cadastrado.</strong> <a href="/owners" style="color:#1e40af;font-weight:700;">Adicione um proprietário →</a>
+</div>
+{% endif %}
+
+<form method="POST" action="/generate" id="genForm" accept-charset="UTF-8">
+  <div class="card">
+    <h2>📋 Gerar Requerimento</h2>
+
+    <p class="section-label">Proprietário *</p>
+    {% if owners %}
+      <div class="owner-selection" style="margin-bottom:20px;">
+        {% for o in owners %}
+        <label class="owner-radio-card" for="owner_{{ o.id }}">
+          <input type="radio" name="owner_id" value="{{ o.id }}" id="owner_{{ o.id }}" required>
+          <div class="owner-radio-content">
+            <h4>{{ o.nome }}</h4>
+            <p>Quadra {{ o.quadra }}, Lote {{ o.lote }}
+              {% if o.rg %}• RG: {{ o.rg }}{% endif %}
+              {% if o.cpf %}• CPF: {{ o.cpf }}{% endif %}
+            </p>
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p style="color:#e53e3e;margin-bottom:20px;">Adicione pelo menos um proprietário para gerar requerimentos.</p>
+    {% endif %}
+
+    <p class="section-label">Data da visita</p>
+
+    <div class="date-toggle">
+      <input type="radio" name="date_mode" id="dm_single" value="single" checked>
+      <label for="dm_single">Dia único</label>
+      <input type="radio" name="date_mode" id="dm_range" value="range">
+      <label for="dm_range">Período (até 3 dias)</label>
+    </div>
+
+    <div id="single_date_block" class="form-grid" style="margin-bottom:16px;">
+      <div>
+        <label for="single_date">Data</label>
+        <input type="date" name="single_date" id="single_date" value="{{ today }}">
+      </div>
+    </div>
+
+    <div id="range_date_block" class="form-grid" style="display:none; margin-bottom:16px;">
+      <div>
+        <label for="date_start">Data inicial</label>
+        <input type="date" name="date_start" id="date_start" value="{{ today }}">
+      </div>
+      <div>
+        <label for="date_end">Data final</label>
+        <input type="date" name="date_end" id="date_end" value="{{ today }}">
+      </div>
+    </div>
+
+    <p class="section-label">Selecionar visitantes <span id="sel_count" class="count-badge">0</span></p>
+
+    {% set all_visitors = visitors %}
+    {% if all_visitors %}
+      <div id="visitor_list">
+        {% for v in all_visitors %}
+        <div class="visitor-card" id="vc_{{ v.id }}">
+          <label class="checkbox-wrap" for="chk_{{ v.id }}" style="flex:1; cursor:pointer;">
+            <input type="checkbox" name="visitor_ids" value="{{ v.id }}" id="chk_{{ v.id }}"
+                   onchange="updateCount()">
+            <div class="visitor-info">
+              <h3>{{ v.nome }}</h3>
+              <p>RG: {{ v.rg }} &nbsp;|&nbsp; CPF: {{ v.cpf }}
+                {% if v.telefone %} &nbsp;|&nbsp; 📞 {{ v.telefone }}{% endif %}
+              </p>
+            </div>
+          </label>
+          <span class="badge badge-{{ v.relacionamento }}">
+            {% if v.relacionamento == 'amigo' %}Amigo(a)
+            {% elif v.relacionamento == 'parente' %}Parente{% if v.relacionamento_detalhe %}: {{ v.relacionamento_detalhe }}{% endif %}
+            {% else %}Outro{% if v.relacionamento_detalhe %}: {{ v.relacionamento_detalhe }}{% endif %}
+            {% endif %}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+      <p style="font-size:0.78rem;color:#718096;margin-top:8px;">Máximo 5 visitantes por requerimento.</p>
+    {% else %}
+      <div class="empty-state">
+        <div class="icon">👥</div>
+        <p>Nenhum visitante cadastrado ainda.</p>
+        <a href="/visitors" class="btn btn-secondary" style="margin-top:12px;">+ Adicionar visitante</a>
+      </div>
+    {% endif %}
+
+    <div class="actions">
+      <button type="submit" class="btn btn-green" {% if not owners %}disabled title="Adicione um proprietário primeiro"{% endif %}>
+        📄 Gerar PDF
+      </button>
+      <a href="/owners" class="btn btn-secondary">+ Gerenciar Proprietários</a>
+      <a href="/visitors" class="btn btn-secondary">+ Gerenciar Visitantes</a>
+    </div>
+  </div>
+</form>
+
+<script>
+  // Date mode toggle
+  document.querySelectorAll('input[name=date_mode]').forEach(r => {
+    r.addEventListener('change', function() {
+      document.getElementById('single_date_block').style.display = this.value === 'single' ? 'grid' : 'none';
+      document.getElementById('range_date_block').style.display = this.value === 'range' ? 'grid' : 'none';
+    });
+  });
+
+  // Selection counter
+  function updateCount() {
+    const checked = document.querySelectorAll('input[name=visitor_ids]:checked');
+    document.getElementById('sel_count').textContent = checked.length;
+    document.querySelectorAll('.visitor-card').forEach(card => {
+      const cb = card.querySelector('input[type=checkbox]');
+      card.classList.toggle('selected', cb && cb.checked);
+    });
+    if (checked.length > 5) {
+      checked[checked.length - 1].checked = false;
+      updateCount();
+      alert('Máximo de 5 visitantes por requerimento.');
+    }
+  }
+  updateCount();
+</script>
+
+<style>
+.owner-selection {
+  display: grid;
+  gap: 12px;
+}
+
+.owner-radio-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: #f8fafc;
+}
+
+.owner-radio-card:hover {
+  border-color: #2d7a50;
+  background: #f0f9f4;
+}
+
+.owner-radio-card input[type="radio"] {
+  margin-top: 2px;
+  accent-color: #2d7a50;
+}
+
+.owner-radio-content h4 {
+  margin: 0 0 4px 0;
+  font-size: 1rem;
+  color: #1a4731;
+  font-weight: 600;
+}
+
+.owner-radio-content p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #4a5568;
+}
+</style>
+{% endblock %}
