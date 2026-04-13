@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🏠 Ibiti Visitors
 ### Automatic Access Request — Parque Ibiti do Paço
 
