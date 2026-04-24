@@ -1,11 +1,11 @@
+import io
 import json
 import sys
 
 from pypdf import PdfReader, PdfWriter
-from pypdf.annotations import FreeText
-
-
-
+from reportlab.lib.colors import HexColor
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
 
 def transform_from_image_coords(bbox, image_width, image_height, pdf_width, pdf_height):
     x_scale = pdf_width / image_width
@@ -38,61 +38,78 @@ def fill_pdf_form(input_pdf_path, fields_json_path, output_pdf_path):
     reader = PdfReader(input_pdf_path)
     writer = PdfWriter()
     
-    writer.append(reader)
-    
     pdf_dimensions = {}
     for i, page in enumerate(reader.pages):
         mediabox = page.mediabox
-        pdf_dimensions[i + 1] = [mediabox.width, mediabox.height]
+        pdf_dimensions[i + 1] = (float(mediabox.width), float(mediabox.height))
     
-    annotations = []
+    # Group fields by page number
+    fields_by_page = {}
     for field in fields_data["form_fields"]:
         page_num = field["page_number"]
-
-        page_info = next(p for p in fields_data["pages"] if p["page_number"] == page_num)
+        if page_num not in fields_by_page:
+            fields_by_page[page_num] = []
+        fields_by_page[page_num].append(field)
+    
+    text_count = 0
+    
+    for page_idx, page in enumerate(reader.pages):
+        page_num = page_idx + 1
         pdf_width, pdf_height = pdf_dimensions[page_num]
-
-        if "pdf_width" in page_info:
-            transformed_entry_box = transform_from_pdf_coords(
-                field["entry_bounding_box"],
-                float(pdf_height)
-            )
-        else:
-            image_width = page_info["image_width"]
-            image_height = page_info["image_height"]
-            transformed_entry_box = transform_from_image_coords(
-                field["entry_bounding_box"],
-                image_width, image_height,
-                float(pdf_width), float(pdf_height)
-            )
         
-        if "entry_text" not in field or "text" not in field["entry_text"]:
-            continue
-        entry_text = field["entry_text"]
-        text = entry_text["text"]
-        if not text:
-            continue
+        if page_num in fields_by_page:
+            # Create a reportlab overlay with the text drawn directly on it
+            packet = io.BytesIO()
+            c = canvas.Canvas(packet, pagesize=(pdf_width, pdf_height))
+            
+            for field in fields_by_page[page_num]:
+                if "entry_text" not in field or "text" not in field["entry_text"]:
+                    continue
+                entry_text = field["entry_text"]
+                text = entry_text["text"]
+                if not text:
+                    continue
+                
+                page_info = next(p for p in fields_data["pages"] if p["page_number"] == page_num)
+                
+                if "pdf_width" in page_info:
+                    transformed_entry_box = transform_from_pdf_coords(
+                        field["entry_bounding_box"],
+                        pdf_height
+                    )
+                else:
+                    image_width = page_info["image_width"]
+                    image_height = page_info["image_height"]
+                    transformed_entry_box = transform_from_image_coords(
+                        field["entry_bounding_box"],
+                        image_width, image_height,
+                        pdf_width, pdf_height
+                    )
+                
+                font_size = entry_text.get("font_size", 14)
+                font_color = entry_text.get("font_color", "000000")
+                
+                left, bottom, right, top = transformed_entry_box
+                
+                c.setFont("Times-Roman", font_size)
+                c.setFillColor(HexColor("#" + font_color))
+                c.drawString(left, bottom, text)
+                text_count += 1
+            
+            c.save()
+            packet.seek(0)
+            
+            # Merge the overlay onto the original page
+            overlay_reader = PdfReader(packet)
+            page.merge_page(overlay_reader.pages[0])
         
-        font_size = str(entry_text.get("font_size", 14)) + "pt"
-        font_color = entry_text.get("font_color", "000000")
-
-        annotation = FreeText(
-            text=text,
-            rect=transformed_entry_box,
-            font="Times-Roman",
-            font_size=font_size,
-            font_color=font_color,
-            border_color=None,
-            background_color=None,
-        )
-        annotations.append(annotation)
-        writer.add_annotation(page_number=page_num - 1, annotation=annotation)
+        writer.add_page(page)
         
     with open(output_pdf_path, "wb") as output:
         writer.write(output)
     
     print(f"Successfully filled PDF form and saved to {output_pdf_path}")
-    print(f"Added {len(annotations)} text annotations")
+    print(f"Added {text_count} text entries")
 
 
 if __name__ == "__main__":

@@ -86,28 +86,28 @@ def build_fields_json(owner, visitors, date_mode, single_date, date_start, date_
 
     # --- Owner name ---
     field(1, "Owner name", "Eu,", [156, 184.7, 173.5, 196.7],
-          [179.4, 184.7, 524.5, 197.0], owner.get("nome", ""), font_size=10)
+          [179.4, 181.7, 524.5, 194.0], owner.get("nome", ""), font_size=10)
 
     # --- Quadra / Lote ---
     field(1, "Quadra", "Quadra:", [70.9, 222.8, 114.7, 234.8],
-          [134.4, 222.8, 185.0, 235.0], owner.get("quadra", ""), font_size=10)
+          [134.4, 219.8, 185.0, 232.0], owner.get("quadra", ""), font_size=10)
     field(1, "Lote", "Lote nº:", [175.1, 222.8, 217.2, 234.8],
-          [236.8, 222.8, 287.0, 235.0], owner.get("lote", ""), font_size=10)
+          [236.8, 219.8, 287.0, 232.0], owner.get("lote", ""), font_size=10)
 
     # --- Owner RG / CPF ---
     field(1, "Owner RG", "RG nº", [482.6, 222.8, 524.7, 234.8],
-          [70.9, 241.7, 210.0, 254.0], owner.get("rg", ""), font_size=10)
+          [70.9, 238.7, 210.0, 251.0], owner.get("rg", ""), font_size=10)
     field(1, "Owner CPF", "CPF nº", [217.5, 241.7, 253.6, 254.0],
-          [256.3, 241.7, 367.0, 254.0], owner.get("cpf", ""), font_size=10)
+          [256.3, 238.7, 367.0, 251.0], owner.get("cpf", ""), font_size=10)
 
     # --- Tipo de morador (X on the correct checkbox) ---
     tipo = owner.get("tipo", "morador")
     if tipo == "proprietario":
         field(1, "Tipo proprietário X", "proprietário", [70.9, 203.7, 91.9, 215.7],
-              [76.0, 203.7, 88.0, 215.5], "X", font_size=10)
+              [76.0, 200.7, 88.0, 212.5], "X", font_size=10)
     elif tipo == "inquilino":
         field(1, "Tipo inquilino X", "inquilino", [181.8, 203.7, 202.6, 215.7],
-              [186.0, 203.7, 199.0, 215.5], "X", font_size=10)
+              [186.0, 200.7, 199.0, 212.5], "X", font_size=10)
     # morador already has X pre-printed in the template
 
     # --- Date ---
@@ -121,11 +121,11 @@ def build_fields_json(owner, visitors, date_mode, single_date, date_start, date_
         
         # Fill day, month, year separately in header
         field(1, "Header day", "no dia", [372.0, 279.8, 395.0, 291.8],
-              [407.0, 279.8, 430.0, 292.0], f"{dt.day:02d}", font_size=10)
+              [407.0, 276.8, 430.0, 289.0], f"{dt.day:02d}", font_size=10)
         field(1, "Header month", "de", [422.0, 279.8, 435.0, 291.8],
-              [442.0, 279.8, 475.0, 292.0], f"{dt.month:02d}", font_size=10)
+              [442.0, 276.8, 475.0, 289.0], f"{dt.month:02d}", font_size=10)
         field(1, "Header year", "de", [458.0, 279.8, 471.0, 291.8],
-              [471.0, 279.8, 494.3, 292.0], str(dt.year), font_size=10)
+              [471.0, 276.8, 494.3, 289.0], str(dt.year), font_size=10)
     elif date_mode == "range" and date_start and date_end:
         try:
             ds = datetime.strptime(date_start, "%Y-%m-%d").strftime("%d/%m/%Y")
@@ -133,18 +133,18 @@ def build_fields_json(owner, visitors, date_mode, single_date, date_start, date_
         except:
             ds, de = date_start, date_end
         field(1, "Date range start", "de", [511.3, 279.8, 524.4, 291.8],
-              [70.9, 298.8, 157.0, 311.0], ds, font_size=10)
+              [70.9, 295.8, 157.0, 308.0], ds, font_size=10)
         field(1, "Date range end", "a", [163.4, 298.8, 169.4, 311.0],
-              [175.3, 298.8, 261.0, 311.0], de, font_size=10)
+              [175.3, 295.8, 261.0, 308.0], de, font_size=10)
 
     # --- Visitor blocks ---
     # (page, nome_top, rg_top, end_top, bairro_top, rel_top)
     visitor_positions = [
-        (1, 440.3, 459.3, 478.3, 497.3, 516.3),
-        (1, 564.6, 583.7, 602.6, 621.6, 640.7),
-        (2, 97.0,  116.1, 135.0, 154.0, 173.1),
-        (2, 221.4, 240.4, 259.4, 278.5, 297.4),
-        (2, 345.8, 364.8, 383.8, 402.8, 421.8),
+        (1, 437.3, 456.3, 475.3, 494.3, 513.3),
+        (1, 561.6, 580.7, 599.6, 618.6, 637.7),
+        (2, 94.0,  113.1, 132.0, 151.0, 170.1),
+        (2, 218.4, 237.4, 256.4, 275.5, 294.4),
+        (2, 342.8, 361.8, 380.8, 399.8, 418.8),
     ]
 
     for i, v in enumerate(visitors[:5]):
@@ -203,11 +203,11 @@ def build_fields_json(owner, visitors, date_mode, single_date, date_start, date_
         d = today
 
     field(2, "Signature day", "Sorocaba,", [156.0, 533.4, 207.1, 545.4],
-          [210.1, 533.4, 246.1, 545.4], str(d.day), font_size=10)
+          [210.1, 530.4, 246.1, 542.4], str(d.day), font_size=10)
     field(2, "Signature month", "de", [249.1, 533.4, 262.2, 545.4],
-          [265.2, 533.4, 355.3, 545.4], months_pt[d.month - 1], font_size=10)
+          [265.2, 530.4, 355.3, 542.4], months_pt[d.month - 1], font_size=10)
     field(2, "Signature year", "de", [358.3, 533.4, 371.3, 545.4],
-          [374.3, 533.4, 431.4, 545.4], str(d.year), font_size=10)
+          [374.3, 530.4, 431.4, 542.4], str(d.year), font_size=10)
 
     return {"pages": pages, "form_fields": form_fields}
 
